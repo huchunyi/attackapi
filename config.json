@@ -22,8 +22,8 @@
             },
             "cmd": "./udp [host] [port] [time]",
             "apis": [
-                "http://api1.example.com/attack?host=[host]&time=[time]&port=[port]",
-                "http://api2.example.com/attack?host=[host]&time=[time]&port=[port]"
+                "http://api1.cnm.nmsl/attack?host=[host]&time=[time]&port=[port]",
+                "http://api2.cnm.nmsl/attack?host=[host]&time=[time]&port=[port]"
             ]
         },
         "http": {
@@ -31,7 +31,7 @@
             "maxtime": 600,
             "type": "layer7",
             "server": {
-                "5.6.7.8": {
+                "300.3000.30000.300000": {
                     "user": "root",
                     "password": "password789"
                 }
