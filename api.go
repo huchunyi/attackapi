@@ -4,7 +4,7 @@
 转载/而开请勿删除本信息，谢谢，请保留出处
 */
 
- /*
+/*
 go mod init api
 go mod tidy
 go build -o api api.go
@@ -314,14 +314,15 @@ func handleAttack(c *gin.Context) {
         return
     }
     
-    // 清理过期的攻击记录
     now := time.Now()
     slotLock.Lock()
+    activeSlots = 0  // 重置活动槽计数
     for m := range methodSlots {
         var activeAttacks []Attack
         for _, attack := range methodSlots[m] {
             if attack.ExpiryTime.After(now) {
                 activeAttacks = append(activeAttacks, attack)
+                activeSlots++  // 重新计算活动槽
             }
         }
         methodSlots[m] = activeAttacks
