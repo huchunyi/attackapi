@@ -1,0 +1,43 @@
+{
+    "api_port": 9899,
+    "api_token": "your-api-token-here",
+    "max_slot": 50,
+    "tg_token": "your-telegram-bot-token",
+    "tg_admin_id": "your-telegram-admin-id",
+    "language": "cn",
+    "methods": {
+        "udp": {
+            "slot": 10,
+            "maxtime": 300,
+            "type": "layer4",
+            "server": {
+                "1.2.3.4": {
+                    "user": "root",
+                    "password": "password123"
+                },
+                "4.3.2.1": {
+                    "user": "admin",
+                    "password": "password456"
+                }
+            },
+            "cmd": "./udp [host] [port] [time]",
+            "apis": [
+                "http://api1.example.com/attack?host=[host]&time=[time]&port=[port]",
+                "http://api2.example.com/attack?host=[host]&time=[time]&port=[port]"
+            ]
+        },
+        "http": {
+            "slot": 5,
+            "maxtime": 600,
+            "type": "layer7",
+            "server": {
+                "5.6.7.8": {
+                    "user": "root",
+                    "password": "password789"
+                }
+            },
+            "cmd": "./http [host] [time]",
+            "apis": []
+        }
+    }
+}
