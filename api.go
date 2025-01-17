@@ -4,6 +4,13 @@
 转载/而开请勿删除本信息，谢谢，请保留出处
 */
 
+ /*
+go mod init api
+go mod tidy
+go build -o api api.go
+*/
+// api.go
+
 package main
 
 import (
@@ -392,7 +399,7 @@ func main() {
         log.Fatal("Error opening log file:", err)
     }
     defer logFile.Close()
-    
+    fmt.Println("\nAPI启动...\n项目地址 https://github.com/sswc01/attackapi\n作者 https://t.me/sswc01\n频道 https://t.me/sswcnet\n")
     r := gin.Default()
     r.GET("/api/attack", handleAttack)
     r.Run(fmt.Sprintf(":%d", mainConfig.APIPort))
