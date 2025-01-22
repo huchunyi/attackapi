@@ -9,7 +9,6 @@ go mod init api
 go mod tidy
 go build -o api api.go
 */
-// api.go
 
 package main
 
@@ -38,12 +37,13 @@ type ServerInfo struct {
 }
 
 type MethodConfig struct {
-    Slot    int                     `json:"slot"`
-    MaxTime int                     `json:"maxtime"`
-    Type    string                  `json:"type"`
-    Server  map[string]ServerInfo   `json:"server"`
-    Cmd     string                  `json:"cmd"`
-    APIs    []string                `json:"apis"`
+    Slot     int                    `json:"slot"`
+    MaxTime  int                    `json:"maxtime"`
+    Type     string                 `json:"type"`
+    Server   map[string]ServerInfo  `json:"server"`
+    Cmd      string                 `json:"cmd"`
+    APIs     []string               `json:"apis"`
+    Cooldown int                    `json:"cooldown"`
 }
 
 type MainConfig struct {
@@ -57,7 +57,8 @@ type MainConfig struct {
 }
 
 type Attack struct {
-    ExpiryTime time.Time
+    ExpiryTime time.Time      // 攻击结束时间
+    CooldownTime time.Time    // 冷却结束时间
 }
 
 // 全局变量
@@ -111,15 +112,15 @@ func getMessage(key string) string {
     return messages["us"][key] // 默认使用英文
 }
 
-// 计算卡槽剩余时间
 func getRemainingTime(method string) int {
     minTime := -1
     now := time.Now()
     for _, attack := range methodSlots[method] {
-        if attack.ExpiryTime.Before(now) {
+        // 使用冷却结束时间而不是攻击结束时间
+        if attack.CooldownTime.Before(now) {
             continue
         }
-        remainingTime := int(time.Until(attack.ExpiryTime).Seconds())
+        remainingTime := int(time.Until(attack.CooldownTime).Seconds())
         if minTime == -1 || remainingTime < minTime {
             minTime = remainingTime
         }
@@ -132,7 +133,7 @@ func containsSensitiveInfo(input string) (bool, string) {
     // 命令注入检测
     dangerousChars := []string{
         ";", "|", "&&", "||", "`", "$", "(", ")", "{", "}", 
-        "$(", "eval", "exec", "system", "shell", 
+        "$(", "eval", "exec",
         "../", "//", "..", "~", "%", "\n", "\r",
     }
     
@@ -145,7 +146,7 @@ func containsSensitiveInfo(input string) (bool, string) {
     // 特殊指令检测
     dangerousCommands := []string{
         "curl", "wget", "bash", "sh", "nc", "netcat", 
-        "python", "perl", "ruby", "lua", "php",
+        "python", "perl", "ruby", "lua",
         "telnet", "ncat", "socat",
     }
     
@@ -164,7 +165,7 @@ func validateHost(host, methodType string) bool {
         ipPattern := regexp.MustCompile(`^(\d{1,3}\.){3}\d{1,3}$`)
         return ipPattern.MatchString(host)
     } else if methodType == "layer7" {
-        urlPattern := regexp.MustCompile(`^https?://[\w\-]+(\.[\w\-]+)+[/#?]?.*$`)
+        urlPattern := regexp.MustCompile(`^(?:https?|http)://[\w\-]+(\.[\w\-]+)+[/#?]?.*$`)
         return urlPattern.MatchString(host)
     }
     return false
@@ -345,9 +346,9 @@ func handleAttack(c *gin.Context) {
         return
     }
     
-    // 添加新的攻击记录
     methodSlots[method] = append(methodSlots[method], Attack{
         ExpiryTime: now.Add(time.Duration(duration) * time.Second),
+        CooldownTime: now.Add(time.Duration(duration + methodConfig.Cooldown) * time.Second),
     })
     activeSlots++
     slotLock.Unlock()
