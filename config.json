@@ -10,6 +10,7 @@
             "slot": 10,
             "maxtime": 300,
             "type": "layer4",
+            "cooldown": 60,
             "server": {
                 "1.2.3.4": {
                     "user": "root",
@@ -30,6 +31,7 @@
             "slot": 5,
             "maxtime": 600,
             "type": "layer7",
+            "cooldown": 60,
             "server": {
                 "300.3000.30000.300000": {
                     "user": "root",
