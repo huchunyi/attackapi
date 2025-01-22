@@ -1,14 +1,9 @@
 /*
-作者 盛世王朝(t.me/sswc01)
-频道 t.me/sswcnet
-转载/而开请勿删除本信息，谢谢，请保留出处
-*/
-
-/*
 go mod init api
 go mod tidy
 go build -o api api.go
 */
+// api.go
 
 package main
 
@@ -134,7 +129,7 @@ func containsSensitiveInfo(input string) (bool, string) {
     dangerousChars := []string{
         ";", "|", "&&", "||", "`", "$", "(", ")", "{", "}", 
         "$(", "eval", "exec",
-        "../", "//", "..", "~", "%", "\n", "\r",
+        "../", "..", "~", "%", "\n", "\r",
     }
     
     for _, char := range dangerousChars {
